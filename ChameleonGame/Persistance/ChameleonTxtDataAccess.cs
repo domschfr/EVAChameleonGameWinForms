@@ -40,7 +40,8 @@ namespace ChameleonGame.Persistance
                 string[] boardInfo = (streamReader.ReadLine() ?? String.Empty).Split('\t');
                 currentPlayer = boardInfo[0] == "r" ? Player.Red : Player.Green;
                 _ = int.TryParse(boardInfo[1], out int size);
-                ChameleonBoard board = new(size);
+
+                List<Piece> pieces = [];
 
                 while (!streamReader.EndOfStream)
                 {
@@ -52,16 +53,12 @@ namespace ChameleonGame.Persistance
                     Player owner = pieceString[2] == "r" ? Player.Red : Player.Green;
                     _ = int.TryParse(pieceString[3], out int delay);
 
-                    Piece piece = new(owner, board[i, j]);
-                    if (delay > 0)
-                    {
-                        piece.IncrementDelay();
-                    }
+                    Piece piece = new(owner, i, j, delay);
 
-                    board[i, j].ChangePiece(piece);
+                    _ = pieces.Append(piece);
                 }
 
-                return board;
+                return new ChameleonBoard(size, pieces);
             }
             catch (Exception ex)
             {

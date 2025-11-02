@@ -15,7 +15,7 @@ namespace ChameleonGame.Test
         public void Cell_ChangePiece_Correct()
         {
             Cell cell = new Cell(0, 0, CellColor.Red);
-            Piece piece = new Piece(Player.Red, cell);
+            Piece piece = new Piece(Player.Red, 0, 0);
 
             cell.ChangePiece(piece);
 
@@ -27,7 +27,7 @@ namespace ChameleonGame.Test
         public void Cell_RemovePiece_Correct()
         {
             Cell cell = new Cell(0, 0, CellColor.Red);
-            Piece piece = new Piece(Player.Red, cell);
+            Piece piece = new Piece(Player.Red, 0, 0);
             cell.ChangePiece(piece);
             cell.ChangePiece(null);
             Assert.Null(cell.Piece);
@@ -36,18 +36,17 @@ namespace ChameleonGame.Test
         [Fact]
         public void Piece_SetCurrentCell_Correct()
         {
-            Cell cell1 = new Cell(0, 0, CellColor.Red);
             Cell cell2 = new Cell(1, 1, CellColor.Green);
-            Piece piece = new Piece(Player.Red, cell1);
+            Piece piece = new Piece(Player.Red, 0, 0);
             piece.SetCurrentCell(cell2);
-            Assert.Equal(cell2, piece.CurrentCell);
+            Assert.Equal(cell2.Row, piece.Row);
+            Assert.Equal(cell2.Col, piece.Col);
         }
 
         [Fact]
         public void Piece_ChangeColor_Correct()
         {
-            Cell cell = new Cell(0, 0, CellColor.Red);
-            Piece piece = new Piece(Player.Red, cell);
+            Piece piece = new Piece(Player.Red, 0, 0);
 
             piece.ChangeColor();
 
@@ -58,8 +57,7 @@ namespace ChameleonGame.Test
         [Fact]
         public void Piece_IncrementDelay_Correct()
         {
-            Cell cell = new Cell(0, 0, CellColor.Red);
-            Piece piece = new Piece(Player.Red, cell);
+            Piece piece = new Piece(Player.Red, 0, 0);
 
             piece.IncrementDelay();
 
@@ -69,8 +67,7 @@ namespace ChameleonGame.Test
         [Fact]
         public void Piece_ResetDelay_Correct()
         {
-            Cell cell = new Cell(0, 0, CellColor.Red);
-            Piece piece = new Piece(Player.Red, cell);
+            Piece piece = new Piece(Player.Red, 0, 0);
 
             piece.IncrementDelay();
             piece.ResetDelay();
@@ -349,9 +346,9 @@ namespace ChameleonGame.Test
         public void Board_PerformColorChange_Correct()
         {
             ChameleonBoard board = new ChameleonBoard(3);
-            board[1, 0].ChangePiece(new Piece(Player.Red, board[1, 0]));
-            board[1, 1].ChangePiece(new Piece(Player.Red, board[1, 1]));
-            board[1, 2].ChangePiece(new Piece(Player.Red, board[1, 2]));
+            board[1, 0].ChangePiece(new Piece(Player.Red, 1, 0));
+            board[1, 1].ChangePiece(new Piece(Player.Red, 1, 1));
+            board[1, 2].ChangePiece(new Piece(Player.Red, 1, 2));
 
             board.HandleColorChange(board[1, 0].Piece!, board[1, 0]);
             board.HandleColorChange(board[1, 1].Piece!, board[1, 1]);
@@ -511,7 +508,7 @@ namespace ChameleonGame.Test
         public void LoadGame_UsesDataAccessAndSetsBoardAndCurrentPlayer()
         {
             ChameleonBoard expectedBoard = new ChameleonBoard(3);
-            expectedBoard[1, 1].ChangePiece(new Piece(Player.Red, expectedBoard[1, 1]));
+            expectedBoard[1, 1].ChangePiece(new Piece(Player.Red, 1, 1));
 
             Player outPlayer = Player.Green;
             _mockDataAccess

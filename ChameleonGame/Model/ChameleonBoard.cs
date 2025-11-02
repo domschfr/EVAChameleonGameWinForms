@@ -22,6 +22,24 @@
             InitializeBoard();
         }
 
+        public ChameleonBoard(int size, List<Piece> pieces)
+        {
+            if (size is not (3 or 5 or 7))
+            {
+                throw new ArgumentException("Board size must be 3 or 5 or 7.");
+            }
+
+            Size = size;
+            Board = new Cell[size, size];
+
+            InitializeBoard();
+
+            foreach (Piece piece in pieces)
+            {
+                Board[piece.Row, piece.Col].ChangePiece(piece);
+            }
+        }
+
         private void InitializeBoard()
         {
             int top = 0, bottom = Size - 2, left = 0, right = Size - 1;
@@ -116,11 +134,11 @@
                 {
                     if (Board[i, j].Color == CellColor.Red)
                     {
-                        Board[i, j].ChangePiece(new Piece(Player.Red, Board[i, j]));
+                        Board[i, j].ChangePiece(new Piece(Player.Red, i, j));
                     }
                     else if (Board[i, j].Color == CellColor.Green)
                     {
-                        Board[i, j].ChangePiece(new Piece(Player.Green, Board[i, j]));
+                        Board[i, j].ChangePiece(new Piece(Player.Green, i, j));
                     }
                 }
             }

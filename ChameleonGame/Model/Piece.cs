@@ -1,15 +1,31 @@
 ﻿namespace ChameleonGame.Model
 {
-    public class Piece(Player owner, Cell cell)
+    public class Piece
     {
-        public Player Owner { get; private set; } = owner;
-        public Cell CurrentCell { get; private set; } = cell;
+        public Player Owner { get; private set; }
+        public int Row { get; private set; }
+        public int Col { get; private set; }
         public int ColorChangeDelay { get; private set; } = 0;
 
+        public Piece(Player owner, int row, int col)
+        {
+            Owner = owner;
+            Row = row;
+            Col = col;
+        }
+
+        public Piece(Player owner, int row, int col, int delay)
+        {
+            Owner = owner;
+            Row = row;
+            Col = col;
+            ColorChangeDelay = delay;
+        }
 
         public void SetCurrentCell(Cell cell)
         {
-            CurrentCell = cell;
+            Row = cell.Row;
+            Col = cell.Col;
         }
 
         public void ChangeColor()
