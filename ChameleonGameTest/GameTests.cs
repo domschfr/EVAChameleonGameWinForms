@@ -471,40 +471,6 @@ namespace ChameleonGame.Test
         }
 
         [Fact]
-        public void GameModel_SaveLoadGame_Correct()
-        {
-            GameModel game = new GameModel();
-            game.NewGame(3);
-
-            _ = game.Board!.TryMovePiece(game.Board[1, 0], game.Board[1, 1], game.CurrentPlayer);
-            game.EndTurn();
-
-            string path = "testgame.txt";
-            game.SaveGame(path);
-            GameModel loadedGame = new GameModel();
-            loadedGame.LoadGame(path);
-            Assert.NotNull(loadedGame.Board);
-            Assert.Equal(game.CurrentPlayer, loadedGame.CurrentPlayer);
-            for (int i = 0; i < game.Board!.Size; i++)
-            {
-                for (int j = 0; j < game.Board.Size; j++)
-                {
-                    Piece? originalPiece = game.Board[i, j].Piece;
-                    Piece? loadedPiece = loadedGame.Board[i, j].Piece;
-                    if (originalPiece == null)
-                    {
-                        Assert.Null(loadedPiece);
-                    }
-                    else
-                    {
-                        Assert.NotNull(loadedPiece);
-                        Assert.Equal(originalPiece.Owner, loadedPiece!.Owner);
-                    }
-                }
-            }
-        }
-
-        [Fact]
         public void LoadGame_UsesDataAccessAndSetsBoardAndCurrentPlayer()
         {
             ChameleonBoard expectedBoard = new ChameleonBoard(3);

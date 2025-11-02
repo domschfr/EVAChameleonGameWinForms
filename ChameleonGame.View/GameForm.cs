@@ -199,9 +199,12 @@ namespace ChameleonGame.View
             void CenterBoardPanel()
             {
                 if (boardPanel.Parent == null) return;
-                var parent = boardPanel.Parent;
+                Control parent = boardPanel.Parent;
+
+                int headerHeight = menuStrip1.Height + pictureBox1.Height + labelTurnIndicator.Height;
+
                 int x = (parent.ClientSize.Width - boardPanel.Width) / 2;
-                int y = (parent.ClientSize.Height - boardPanel.Height) / 2;
+                int y = Math.Max(headerHeight + 10, (parent.ClientSize.Height - boardPanel.Height) / 2 + headerHeight / 2);
                 boardPanel.Location = new Point(Math.Max(0, x), Math.Max(0, y));
             }
 
