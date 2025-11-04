@@ -1,4 +1,5 @@
 using ChameleonGame.Model;
+using ChameleonGame.Persistance;
 
 namespace ChameleonGame.View
 {
@@ -359,6 +360,7 @@ namespace ChameleonGame.View
         {
             try
             {
+                _gameModel.DataAccess = new ChameleonTxtDataAccess();
                 _gameModel.SaveGame(e);
             }
             catch (Exception ex)
@@ -372,6 +374,7 @@ namespace ChameleonGame.View
         {
             try
             {
+                _gameModel.DataAccess = new ChameleonTxtDataAccess();
                 _gameModel.LoadGame(e);
                 RenderBoard(_gameModel.Board!);
                 ShowCurrentPlayer(_gameModel.CurrentPlayer);

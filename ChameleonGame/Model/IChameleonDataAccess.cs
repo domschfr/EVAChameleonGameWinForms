@@ -1,6 +1,4 @@
-﻿using ChameleonGame.Model;
-
-namespace ChameleonGame.Persistance
+﻿namespace ChameleonGame.Model
 {
     public interface IChameleonDataAccess
     {

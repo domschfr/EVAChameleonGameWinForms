@@ -55,7 +55,7 @@ namespace ChameleonGame.Persistance
 
                     Piece piece = new(owner, i, j, delay);
 
-                    _ = pieces.Append(piece);
+                    pieces.Add(piece);
                 }
 
                 return new ChameleonBoard(size, pieces);

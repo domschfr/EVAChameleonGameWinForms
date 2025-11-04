@@ -1,6 +1,4 @@
-﻿using ChameleonGame.Persistance;
-
-namespace ChameleonGame.Model
+﻿namespace ChameleonGame.Model
 {
     public enum Player
     {
@@ -32,8 +30,7 @@ namespace ChameleonGame.Model
 
         public void LoadGame(string path)
         {
-            DataAccess ??= new ChameleonTxtDataAccess();
-            Board = DataAccess.LoadGame(path, out Player currentPlayer);
+            Board = DataAccess!.LoadGame(path, out Player currentPlayer);
             CurrentPlayer = currentPlayer;
 
             OnBoardChange();
@@ -41,8 +38,7 @@ namespace ChameleonGame.Model
 
         public void SaveGame(string path)
         {
-            DataAccess = new ChameleonTxtDataAccess();
-            DataAccess.SaveGame(path, Board!, CurrentPlayer);
+            DataAccess!.SaveGame(path, Board!, CurrentPlayer);
         }
 
         public void EndTurn()

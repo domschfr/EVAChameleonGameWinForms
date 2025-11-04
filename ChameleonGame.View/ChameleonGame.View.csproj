@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ChameleonGame.Persistance\ChameleonGame.Persistance.csproj" />
     <ProjectReference Include="..\ChameleonGame\ChameleonGame.csproj" />
   </ItemGroup>
 
