@@ -25,11 +25,11 @@ namespace ChameleonGame.View
             InitializeComponent();
             _gameModel = new GameModel();
 
-            CellClicked += OnCellClicked;
-            NewGame += OnNewGame;
+            CellClicked += (s, e) => OnCellClicked(e);
+            NewGame +=  OnNewGame;
             SaveGame += OnSaveGame;
             LoadGame += OnLoadGame;
-
+            _gameModel.ErrorOccurred += (s, e) => OnError(e);
             _gameModel.BoardChanged += (s, e) => RenderBoard(_gameModel.Board!);
             _gameModel.CurrentPlayerChanged += (s, e) => ShowCurrentPlayer(_gameModel.CurrentPlayer);
             _gameModel.GameOver += (s, e) => OnGameOver(_gameModel.Winner);
@@ -248,7 +248,7 @@ namespace ChameleonGame.View
             MessageBox.Show(errorMessage, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
-        private void newGameToolStripMenuItem_Click(object sender, EventArgs e)
+        private void NewGameToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using NewGameForm newGameForm = new NewGameForm();
             if (newGameForm.ShowDialog() == DialogResult.OK)
@@ -257,7 +257,7 @@ namespace ChameleonGame.View
             }
         }
 
-        private void saveGameToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SaveGameToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using SaveFileDialog saveFileDialog = new SaveFileDialog() { Filter = "Chameleon Save (*.txt)|*.txt|All files (*.*)|*.*" };
             if (saveFileDialog.ShowDialog() == DialogResult.OK)
@@ -266,7 +266,7 @@ namespace ChameleonGame.View
             }
         }
 
-        private void loadGameToolStripMenuItem_Click(object sender, EventArgs e)
+        private void LoadGameToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using OpenFileDialog openFileDialog = new OpenFileDialog() { Filter = "Chameleon Save (*.txt)|*.txt|All files (*.*)|*.*" };
             if (openFileDialog.ShowDialog() == DialogResult.OK)
@@ -275,7 +275,7 @@ namespace ChameleonGame.View
             }
         }
 
-        private void OnCellClicked(object? sender, (int r, int c) e)
+        private void OnCellClicked((int r, int c) e)
         {
             if (_gameModel.Board == null || !boardPanel.Enabled)
             {
@@ -283,62 +283,7 @@ namespace ChameleonGame.View
                 return;
             }
 
-            if (_selectedCell == null)
-            {
-                Cell cell = _gameModel.Board[e.r, e.c];
-                if (cell.Piece == null)
-                {
-                    OnError("Please select a cell that contains your piece.");
-                    return;
-                }
-
-                if (cell.Piece.Owner != _gameModel.CurrentPlayer)
-                {
-                    OnError("This is not your piece. Please select yours!");
-                    return;
-                }
-
-                _selectedCell = e;
-                RenderBoard(_gameModel.Board);
-            }
-            else
-            {
-                Cell from = _gameModel.Board[_selectedCell.Value.r, _selectedCell.Value.c];
-                Cell to = _gameModel.Board[e.r, e.c];
-
-                if (from.Row == to.Row && from.Col == to.Col)
-                {
-                    _selectedCell = null;
-                    RenderBoard(_gameModel.Board);
-                    return;
-                }
-
-                try
-                {
-                    bool moved = _gameModel.Board.TryMovePiece(from, to, _gameModel.CurrentPlayer);
-                    if (!moved)
-                    {
-                        bool jumped = _gameModel.Board.TryJump(from, to, _gameModel.CurrentPlayer);
-                        if (!jumped)
-                        {
-                            OnError("Invalid move or jump!");
-                            return;
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-
-                    OnError(ex.Message);
-                    _selectedCell = null;
-                    return;
-                }
-
-                _selectedCell = null;
-                _gameModel.EndTurn();
-                RenderBoard(_gameModel.Board);
-                ShowCurrentPlayer(_gameModel.CurrentPlayer);
-            }
+            _gameModel.OnCellClicked(e.r, e.c);           
         }
 
         private void OnNewGame(object? sender, int e)
@@ -346,8 +291,6 @@ namespace ChameleonGame.View
             try
             {
                 _gameModel.NewGame(e);
-                RenderBoard(_gameModel.Board!);
-                ShowCurrentPlayer(_gameModel.CurrentPlayer);
                 boardPanel.Enabled = true;
             }
             catch (Exception ex)
@@ -376,8 +319,6 @@ namespace ChameleonGame.View
             {
                 _gameModel.DataAccess = new ChameleonTxtDataAccess();
                 _gameModel.LoadGame(e);
-                RenderBoard(_gameModel.Board!);
-                ShowCurrentPlayer(_gameModel.CurrentPlayer);
                 boardPanel.Enabled = true;
             }
             catch (Exception ex)

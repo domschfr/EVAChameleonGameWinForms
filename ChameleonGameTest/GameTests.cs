@@ -450,6 +450,14 @@ namespace ChameleonGame.Test
         {
             GameModel game = new GameModel();
             game.NewGame(3);
+
+            bool hasGameOverRaised = false;
+            game.GameOver += (sender, winner) =>
+            {
+                hasGameOverRaised = true;
+                Assert.Equal(Player.Red, winner);
+            };
+
             // Remove all Green pieces to simulate game over
             for (int i = 0; i < game.Board!.Size; i++)
             {
@@ -462,27 +470,37 @@ namespace ChameleonGame.Test
                 }
             }
             bool isGameOver = game.IsGameOver();
+            
             Assert.True(isGameOver);
             Assert.Equal(Player.Red, game.Winner);
-            game.GameOver += (sender, winner) =>
-            {
-                Assert.Equal(Player.Red, winner);
-            };
+            
+            Assert.True(hasGameOverRaised);
         }
 
         [Fact]
         public void LoadGame_UsesDataAccessAndSetsBoardAndCurrentPlayer()
         {
-            ChameleonBoard expectedBoard = new ChameleonBoard(3);
-            expectedBoard[1, 1].ChangePiece(new Piece(Player.Red, 1, 1));
+            ChameleonBoardDTO dataAccessBoardDTO = new ChameleonBoardDTO()
+            {
+                Size = 3,
+                Pieces = new List<PieceDTO>()
+                {
+                    new PieceDTO() { Owner = PlayerDTO.Red, Row = 1, Col = 1, ColorChangeDelay = 0 }
+                }
+            };
 
-            Player outPlayer = Player.Green;
+            ChameleonBoard expectedBoard = new ChameleonBoard(3, new List<Piece>()
+            {
+                new Piece(Player.Red, 1, 1, 0)
+            });
+
+            PlayerDTO outPlayer = PlayerDTO.Green;
             _mockDataAccess
-                .Setup(m => m.LoadGame(It.IsAny<string>(), out It.Ref<Player>.IsAny))
-                .Returns((string path, out Player p) =>
+                .Setup(m => m.LoadGame(It.IsAny<string>(), out It.Ref<PlayerDTO>.IsAny))
+                .Returns((string path, out PlayerDTO p) =>
                 {
                     p = outPlayer;
-                    return expectedBoard;
+                    return dataAccessBoardDTO;
                 });
 
             GameModel game = new GameModel();
@@ -493,19 +511,19 @@ namespace ChameleonGame.Test
             game.LoadGame("somepath");
 
             Assert.NotNull(game.Board);
-            Assert.Equal(expectedBoard, game.Board);
+            Assert.Equivalent(expectedBoard, game.Board);
             Assert.Equal(Player.Green, game.CurrentPlayer);
             Assert.Equal(Player.Red, game.Board![1, 1].Piece!.Owner);
             Assert.True(hasBoardChanged);
             Assert.Equal(_mockDataAccess.Object, game.DataAccess);
-            _mockDataAccess.Verify(m => m.LoadGame("somepath", out It.Ref<Player>.IsAny), Times.Once);
+            _mockDataAccess.Verify(m => m.LoadGame("somepath", out It.Ref<PlayerDTO>.IsAny), Times.Once);
         }
 
         [Fact]
         public void LoadGame_DataAccessThrowsException()
         {
             _mockDataAccess
-                .Setup(m => m.LoadGame(It.IsAny<string>(), out It.Ref<Player>.IsAny))
+                .Setup(m => m.LoadGame(It.IsAny<string>(), out It.Ref<PlayerDTO>.IsAny))
                 .Throws(new ChameleonDataException("load failed"));
 
             GameModel game = new GameModel();
@@ -514,7 +532,7 @@ namespace ChameleonGame.Test
             // Act & Assert
             ChameleonDataException ex = Assert.Throws<ChameleonDataException>(() => game.LoadGame("badpath"));
             Assert.Equal("load failed", ex.Message);
-            _mockDataAccess.Verify(m => m.LoadGame(It.IsAny<string>(), out It.Ref<Player>.IsAny), Times.Once);
+            _mockDataAccess.Verify(m => m.LoadGame(It.IsAny<string>(), out It.Ref<PlayerDTO>.IsAny), Times.Once);
         }
     }
 }

@@ -13,4 +13,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ChameleonGame.Persistance\ChameleonGame.Persistance.csproj" />
+  </ItemGroup>
+
 </Project>

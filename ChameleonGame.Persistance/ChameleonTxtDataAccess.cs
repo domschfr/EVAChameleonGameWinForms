@@ -1,26 +1,19 @@
-﻿using ChameleonGame.Model;
-using System.Text;
+﻿using System.Text;
 
 namespace ChameleonGame.Persistance
 {
     public class ChameleonTxtDataAccess : IChameleonDataAccess
     {
-        public void SaveGame(String path, ChameleonBoard board, Player currentPlayer)
+        public void SaveGame(String path, ChameleonBoardDTO board, PlayerDTO currentPlayer)
         {
             try
             {
                 StringBuilder sb = new();
-                _ = sb.Append($"{(currentPlayer == Player.Red ? 'r' : 'g')}\t{board.Size.ToString()}\n");
+                _ = sb.Append($"{(currentPlayer == PlayerDTO.Red ? 'r' : 'g')}\t{board.Size.ToString()}\n");
 
-                for (int i = 0; i < board.Size; i++)
+                foreach (PieceDTO piece in board.Pieces)
                 {
-                    for (int j = 0; j < board.Size; j++)
-                    {
-                        if (board[i, j].Piece != null)
-                        {
-                            _ = sb.Append($"{i}\t{j}\t{(board[i, j].Piece!.Owner == Player.Red ? 'r' : 'g')}\t{board[i, j].Piece!.ColorChangeDelay}\n");
-                        }
-                    }
+                    _ = sb.Append($"{piece.Row}\t{piece.Col}\t{(piece.Owner == PlayerDTO.Red ? 'r' : 'g')}\t{piece.ColorChangeDelay}\n");
                 }
 
                 using StreamWriter streamWriter = new(path);
@@ -32,16 +25,16 @@ namespace ChameleonGame.Persistance
             }
         }
 
-        public ChameleonBoard LoadGame(String path, out Player currentPlayer)
+        public ChameleonBoardDTO LoadGame(String path, out PlayerDTO currentPlayer)
         {
             try
             {
                 using StreamReader streamReader = new(path);
                 string[] boardInfo = (streamReader.ReadLine() ?? String.Empty).Split('\t');
-                currentPlayer = boardInfo[0] == "r" ? Player.Red : Player.Green;
+                currentPlayer = boardInfo[0] == "r" ? PlayerDTO.Red : PlayerDTO.Green;
                 _ = int.TryParse(boardInfo[1], out int size);
 
-                List<Piece> pieces = [];
+                List<PieceDTO> pieces = [];
 
                 while (!streamReader.EndOfStream)
                 {
@@ -50,15 +43,25 @@ namespace ChameleonGame.Persistance
 
                     _ = int.TryParse(pieceString[0], out int i);
                     _ = int.TryParse(pieceString[1], out int j);
-                    Player owner = pieceString[2] == "r" ? Player.Red : Player.Green;
+                    PlayerDTO owner = pieceString[2] == "r" ? PlayerDTO.Red : PlayerDTO.Green;
                     _ = int.TryParse(pieceString[3], out int delay);
 
-                    Piece piece = new(owner, i, j, delay);
+                    PieceDTO piece = new()
+                    {
+                        Owner = owner,
+                        Row = i,
+                        Col = j,
+                        ColorChangeDelay = delay
+                    };
 
                     pieces.Add(piece);
                 }
 
-                return new ChameleonBoard(size, pieces);
+                return new ChameleonBoardDTO()
+                {
+                    Size = size,
+                    Pieces = pieces
+                };
             }
             catch (Exception ex)
             {

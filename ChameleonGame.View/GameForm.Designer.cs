@@ -62,21 +62,21 @@
             newGameToolStripMenuItem.Name = "newGameToolStripMenuItem";
             newGameToolStripMenuItem.Size = new Size(77, 20);
             newGameToolStripMenuItem.Text = "New Game";
-            newGameToolStripMenuItem.Click += newGameToolStripMenuItem_Click;
+            newGameToolStripMenuItem.Click += NewGameToolStripMenuItem_Click;
             // 
             // saveGameToolStripMenuItem
             // 
             saveGameToolStripMenuItem.Name = "saveGameToolStripMenuItem";
             saveGameToolStripMenuItem.Size = new Size(77, 20);
             saveGameToolStripMenuItem.Text = "Save Game";
-            saveGameToolStripMenuItem.Click += saveGameToolStripMenuItem_Click;
+            saveGameToolStripMenuItem.Click += SaveGameToolStripMenuItem_Click;
             // 
             // loadGameToolStripMenuItem
             // 
             loadGameToolStripMenuItem.Name = "loadGameToolStripMenuItem";
             loadGameToolStripMenuItem.Size = new Size(79, 20);
             loadGameToolStripMenuItem.Text = "Load Game";
-            loadGameToolStripMenuItem.Click += loadGameToolStripMenuItem_Click;
+            loadGameToolStripMenuItem.Click += LoadGameToolStripMenuItem_Click;
             // 
             // labelTurnIndicator
             // 
